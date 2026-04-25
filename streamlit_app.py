@@ -23,10 +23,19 @@ def get_unique_visitor_count(visitor_id: str) -> int:
     return len(visitor_ids)
 
 # รับ visitor_id จาก query params แล้ว redirect หากยังไม่มี
-params = st.experimental_get_query_params()
-visitor_id = params.get("visitor_id", [None])[0]
+def get_query_params():
+    if hasattr(st, "experimental_get_query_params"):
+        return st.experimental_get_query_params()
+    if hasattr(st, "query_params"):
+        return st.query_params
+    return {}
 
-if visitor_id is None:
+params = get_query_params()
+visitor_id = None
+if params is not None:
+    visitor_id = params.get("visitor_id", [None])[0]
+
+if not visitor_id:
     components.html(
         f"""
         <script>
